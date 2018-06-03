@@ -1,0 +1,63 @@
+version: '3'
+services:
+
+  broker:
+    image: "rabbitmq:3-management"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      - ./services/broker/rabbitmq-isolated.conf:/etc/rabbitmq/rabbitmq.config
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:15672"]
+        interval: 30s
+        timeout: 10s
+        retries: 5  
+    
+  producer:
+    image: "node:8"
+    working_dir: /src
+    command: bash -c "npm run deploy"
+    volumes:
+      - ./services/producer/src:/src
+    ports:
+      - "3000:3000"        
+    links:
+      - broker
+    depends_on:
+      - broker
+
+  consumer:
+    image: "node:8"
+    working_dir: /src
+    command: bash -c "npm run deploy"
+    volumes:
+      - ./services/consumer/src:/src
+    links:
+      - broker
+      - client1
+      - client2
+    depends_on:
+      - broker
+      - producer
+      - client1
+      - client2
+
+  client1:
+    image: "node:8"
+    working_dir: /src
+    command: bash -c "npm run deploy"
+    volumes:
+      - ./services/client/src:/src
+    environment:
+      - SERVICE_NAME=client1
+  
+  client2:
+    image: "node:8"
+    working_dir: /src
+    command: bash -c "npm run deploy"
+    volumes:
+      - ./services/client/src:/src
+    environment:
+      - SERVICE_NAME=client2
+  

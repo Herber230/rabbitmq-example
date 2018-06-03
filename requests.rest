@@ -1,0 +1,39 @@
+//Check server
+GET http://localhost:3000/
+
+//Send one message
+POST http://localhost:3000/api/send-message HTTP/1.1
+content-type: application/json
+
+{
+    "destination": "client1",
+    "message": "Hello client 1"
+}
+
+//Send many messages
+POST http://localhost:3000/api/send-message HTTP/1.1
+content-type: application/json
+
+[
+    {
+        "destination": "client1",
+        "message": "Hello client 1"
+    },
+    {
+        "destination": "client2",
+        "message": "Hello client 2"
+    },
+    {
+        "destination": "client1",
+        "message": "Hello again client 1"
+    },
+    {
+        "destination": "client2",
+        "message": "Bye client 2"
+    },
+    {
+        "destination": "client1",
+        "message": "Bye client 1"
+    }
+]
+    
